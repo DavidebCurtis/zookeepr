@@ -5,9 +5,12 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+// makes is so these files are not locked behind an endpoint
+app.use(express.static("public"));
 const { animals } = require("./data/animals");
 const fs = require("fs");
 const path = require("path");
+const res = require("express/lib/response");
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -101,6 +104,23 @@ app.get("/api/animals/:id", (req, res) => {
   } else {
     res.sendStatus(404).send("404: There is not an animal with that id.");
   }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
+
+app.get("/animals", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/animals.html"));
+});
+
+app.get("/zookeepers", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/zookeepers.html"));
+});
+
+// Wildcard re-route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 // POST Requests
